@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetVizör - Network Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- FontAwesome for App Logos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Controls -->
+        <aside class="sidebar">
+            <div class="logo">
+                <h2>🌐 NetVizör</h2>
+            </div>
+            
+            <div class="status-panel">
+                <div class="status-indicator">
+                    <span class="dot connected" id="ws-status-dot"></span>
+                    <span id="ws-status-text" data-i18n="status_connecting">Bağlanıyor...</span>
+                </div>
+                <div class="mode-indicator" id="app-mode">
+                    <span class="badge" id="mode-badge" data-i18n="mode_detecting">Tespit ediliyor...</span>
+                </div>
+            </div>
+
+            <div class="controls">
+                <h3><span data-i18n="controls_title">Kontroller</span></h3>
+                
+                <button id="btn-pause" class="btn primary">
+                    <span class="icon">⏸️</span> <span data-i18n="btn_pause">Durdur</span>
+                </button>
+                
+                <button id="btn-export" class="btn secondary">
+                    <span class="icon">💾</span> <span data-i18n="btn_export">Kaydet (.json)</span>
+                </button>
+                <div id="export-msg" class="msg-text"></div>
+                
+                <div class="settings">
+                    <label for="lang-select" data-i18n="language">Dil:</label>
+                    <select id="lang-select" class="select-box">
+                        <option value="tr">Türkçe</option>
+                        <option value="en">English</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="interfaces-list" id="interfaces-container">
+                <h3 data-i18n="interfaces_title">Ağ Arayüzleri</h3>
+                <!-- Interfaces will be injected here -->
+            </div>
+        </aside>
+
+        <!-- Main Dashboard -->
+        <main class="dashboard">
+            <header>
+                <div class="header-stats">
+                    <div class="stat-box">
+                        <span class="label" data-i18n="total_upload">Toplam Giden</span>
+                        <span class="value down" id="total-upload">0.00 MB/s</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label" data-i18n="total_download">Toplam Gelen</span>
+                        <span class="value up" id="total-download">0.00 MB/s</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="label" data-i18n="active_conns">Aktif Bağlantılar</span>
+                        <span class="value" id="active-connections">0</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid-container">
+                <!-- Bandwidth Chart -->
+                <div class="card chart-card wide">
+                    <h3 data-i18n="bandwidth_chart">Bant Genişliği</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="bandwidthChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Process Table -->
+                <div class="card table-card">
+                    <h3 data-i18n="process_usage">Süreç Bazlı Kullanım</h3>
+                    <div class="table-wrapper">
+                        <table id="process-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="th_app">Uygulama</th>
+                                    <th data-i18n="th_pid">PID/Kullanıcı</th>
+                                    <th data-i18n="th_speed">Anlık Hız</th>
+                                    <th data-i18n="th_total">Toplam Veri</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Process rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Protocol Chart (Advanced Only) -->
+                <div class="card chart-card advanced-feature">
+                    <h3 data-i18n="protocol_dist">Protokol Dağılımı</h3>
+                    <div class="chart-wrapper pie-wrapper">
+                        <canvas id="protocolChart"></canvas>
+                    </div>
+                    <div class="overlay-lock" id="protocol-lock">
+                        <span>🔒 <span data-i18n="root_required">Root Gerekli</span></span>
+                    </div>
+                </div>
+
+                <!-- Connections Table -->
+                <div class="card table-card">
+                    <h3 data-i18n="live_connections">Canlı Bağlantılar</h3>
+                    <div class="table-wrapper">
+                        <table id="connections-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="th_type">Tip</th>
+                                    <th data-i18n="th_local">Yerel</th>
+                                    <th data-i18n="th_remote">Uzak</th>
+                                    <th data-i18n="th_state">Durum</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Connection rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Packet Log (Advanced Only) -->
+                <div class="card table-card wide advanced-feature">
+                    <h3 data-i18n="packet_log">Paket Günlüğü</h3>
+                    <div class="table-wrapper">
+                        <table id="packet-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="th_proto">Protokol</th>
+                                    <th data-i18n="th_src">Kaynak</th>
+                                    <th data-i18n="th_dst">Hedef</th>
+                                    <th data-i18n="th_size">Boyut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Packet rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="overlay-lock" id="packet-lock">
+                        <span>🔒 <span data-i18n="root_required">Root Gerekli</span></span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Scripts -->
+    <script src="/js/i18n.js"></script>
+    <script src="/js/charts.js"></script>
+    <script src="/js/tables.js"></script>
+    <script src="/js/app.js"></script>
+</body>
+</html>
