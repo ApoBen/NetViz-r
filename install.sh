@@ -12,10 +12,8 @@ echo -e "${BLUE}======================================${NC}"
 
 # Auto-install dependencies on Termux
 if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
-    if ! command -v git &> /dev/null || ! command -v python3 &> /dev/null; then
-        echo -e "${GREEN}[+] Termux bağımlılıkları yükleniyor (git, python)...${NC}"
-        pkg install git python -y
-    fi
+    echo -e "${GREEN}[+] Termux bağımlılıkları kontrol ediliyor / yükleniyor...${NC}"
+    pkg install git python python-psutil -y
 fi
 
 # Check for Python
@@ -44,7 +42,11 @@ fi
 
 # Create Virtual Environment
 echo -e "${GREEN}[+] Sanal ortam (venv) oluşturuluyor ve bağımlılıklar yükleniyor...${NC}"
-python3 -m venv venv
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+    python3 -m venv venv --system-site-packages
+else
+    python3 -m venv venv
+fi
 ./venv/bin/pip install -r requirements.txt > /dev/null 2>&1
 
 # Setup global command 'netvizor'

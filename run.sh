@@ -19,7 +19,11 @@ fi
 # Sanal ortam oluştur/kontrol et
 if [ ! -d "venv" ]; then
     echo -e "${GREEN}[+] Sanal ortam (venv) oluşturuluyor...${NC}"
-    python3 -m venv venv
+    if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+        python3 -m venv venv --system-site-packages
+    else
+        python3 -m venv venv
+    fi
 fi
 
 # Bağımlılıkları yükle

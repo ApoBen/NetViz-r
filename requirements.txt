@@ -1,5 +1,5 @@
 fastapi==0.109.2
-uvicorn[standard]==0.27.1
+uvicorn==0.27.1
 scapy==2.5.0
 psutil==5.9.8
 websockets==12.0
