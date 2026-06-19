@@ -30,7 +30,6 @@ fi
 echo -e "${GREEN}[+] Bağımlılıklar kontrol ediliyor...${NC}"
 if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
     grep -v "psutil" requirements.txt > termux_requirements.txt
-    ./venv/bin/pip install pydantic-core --extra-index-url https://eutalix.github.io/android-pydantic-core/
     ./venv/bin/pip install -r termux_requirements.txt
     rm termux_requirements.txt
 else

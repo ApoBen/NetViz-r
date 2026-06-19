@@ -1,4 +1,20 @@
 import os
+import sys
+import typing
+
+# Python 3.12.4+ / 3.13 compatibility monkeypatch for Pydantic V1
+if sys.version_info >= (3, 12, 4):
+    original_evaluate = typing.ForwardRef._evaluate
+    def patched_evaluate(self, globalns, localns, type_params=None, recursive_guard=None):
+        if recursive_guard is None:
+            if isinstance(type_params, set):
+                recursive_guard = type_params
+                type_params = None
+            else:
+                recursive_guard = set()
+        return original_evaluate(self, globalns, localns, type_params=type_params, recursive_guard=recursive_guard)
+    typing.ForwardRef._evaluate = patched_evaluate
+
 import asyncio
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
