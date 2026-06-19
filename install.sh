@@ -61,8 +61,8 @@ cd \"$INSTALL_DIR\"
 ./run.sh \"\$@\"
 "
 
-echo "$WRAPPER_SCRIPT" > /tmp/netvizor_wrapper
-$SUDO_CMD mv /tmp/netvizor_wrapper "$BIN_DIR/netvizor"
+echo "$WRAPPER_SCRIPT" > "$INSTALL_DIR/netvizor_wrapper"
+$SUDO_CMD mv "$INSTALL_DIR/netvizor_wrapper" "$BIN_DIR/netvizor"
 $SUDO_CMD chmod +x "$BIN_DIR/netvizor"
 
 echo -e "${GREEN}[+] Kurulum başarıyla tamamlandı! 🎉${NC}"
