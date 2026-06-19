@@ -9,8 +9,21 @@ domain_counter = Counter()
 
 def dns_callback(packet):
     try:
-        if packet.haslayer(DNSQR):
-            query = packet[DNSQR].qname.decode('utf-8').rstrip('.')
+        if packet.haslayer(DNSRR):
+            # Check DNSRR first — response packets also contain DNSQR
+            if packet.an:
+                domain = packet[DNSRR].rrname.decode('utf-8', errors='replace').rstrip('.')
+                rdata = str(packet[DNSRR].rdata)
+                
+                dns_log.appendleft({
+                    "time": float(packet.time),
+                    "domain": domain,
+                    "type": "Response",
+                    "data": rdata
+                })
+            
+        elif packet.haslayer(DNSQR):
+            query = packet[DNSQR].qname.decode('utf-8', errors='replace').rstrip('.')
             qtype = packet[DNSQR].qtype
             
             src_ip = packet[IP].src if IP in packet else "Unknown"
@@ -23,19 +36,6 @@ def dns_callback(packet):
                 "src": src_ip
             })
             domain_counter[query] += 1
-            
-        elif packet.haslayer(DNSRR):
-            # It's a response
-            if packet.an:
-                domain = packet[DNSRR].rrname.decode('utf-8').rstrip('.')
-                rdata = str(packet[DNSRR].rdata)
-                
-                dns_log.appendleft({
-                    "time": float(packet.time),
-                    "domain": domain,
-                    "type": "Response",
-                    "data": rdata
-                })
     except Exception:
         pass
 

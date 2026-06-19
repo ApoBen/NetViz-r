@@ -1,4 +1,5 @@
 import psutil
+import socket
 import asyncio
 from app.websocket_manager import manager
 from app.logger import Logger
@@ -23,7 +24,7 @@ async def monitor_connections(logger: Logger):
                 status = conn.status
                 status_counts[status] = status_counts.get(status, 0) + 1
                 
-                proc_name = "Bilinmeyen"
+                proc_name = "Unknown"
                 if conn.pid:
                     try:
                         proc = psutil.Process(conn.pid)
@@ -33,8 +34,8 @@ async def monitor_connections(logger: Logger):
                         
                 conn_list.append({
                     "fd": conn.fd,
-                    "family": "IPv4" if conn.family == 2 else ("IPv6" if conn.family == 10 else str(conn.family)),
-                    "type": "TCP" if conn.type == 1 else ("UDP" if conn.type == 2 else str(conn.type)),
+                    "family": "IPv4" if conn.family == socket.AF_INET else ("IPv6" if conn.family == socket.AF_INET6 else str(conn.family)),
+                    "type": "TCP" if conn.type == socket.SOCK_STREAM else ("UDP" if conn.type == socket.SOCK_DGRAM else str(conn.type)),
                     "laddr": laddr,
                     "raddr": raddr,
                     "status": status,

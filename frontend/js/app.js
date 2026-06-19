@@ -37,6 +37,12 @@ function initWebSocket() {
         setTimeout(initWebSocket, 3000);
     };
     
+    ws.onerror = (err) => {
+        console.error('WebSocket error:', err);
+        wsStatusDot.className = 'dot disconnected';
+        wsStatusText.textContent = translations[currentLang]?.status_disconnected || 'Disconnected';
+    };
+    
     ws.onmessage = (event) => {
         if (isPaused) return; // Ignore updates if paused locally
         
@@ -99,7 +105,13 @@ function showToast(title, message, level, appName) {
     if (level === 'high') icon = '🚨';
     if (level === 'low') icon = 'ℹ️';
     
-    header.innerHTML = `<span>${icon} ${title}</span><button class="toast-close">&times;</button>`;
+    const iconSpan = document.createElement('span');
+    iconSpan.textContent = `${icon} ${title}`;
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'toast-close';
+    closeBtn.innerHTML = '&times;';
+    header.appendChild(iconSpan);
+    header.appendChild(closeBtn);
     
     // Body
     const body = document.createElement('div');
@@ -125,7 +137,7 @@ function showToast(title, message, level, appName) {
     }
     
     // Close event
-    header.querySelector('.toast-close').onclick = () => toast.remove();
+    closeBtn.onclick = () => toast.remove();
     
     container.appendChild(toast);
     
@@ -143,11 +155,12 @@ function showToast(title, message, level, appName) {
 
 async function addToWhitelist(appName) {
     try {
-        await fetch('/api/whitelist', {
+        const res = await fetch('/api/whitelist', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({app_name: appName})
         });
+        if (!res.ok) return;
         showToast("Bilgi", `${appName} beyaz listeye eklendi.`, "low");
     } catch(e) {
         console.error("Whitelist error", e);
@@ -168,13 +181,22 @@ function updateInterfaces(interfaces) {
         div.style.borderRadius = '8px';
         div.style.fontSize = '12px';
         
-        div.innerHTML = `
-            <div style="font-weight:bold; margin-bottom:4px; color:var(--text-primary)">${name}</div>
-            <div style="display:flex; justify-content:space-between">
+        const nameDiv = document.createElement('div');
+        nameDiv.style.fontWeight = 'bold';
+        nameDiv.style.marginBottom = '4px';
+        nameDiv.style.color = 'var(--text-primary)';
+        nameDiv.textContent = name;
+        
+        const statsDiv = document.createElement('div');
+        statsDiv.style.display = 'flex';
+        statsDiv.style.justifyContent = 'space-between';
+        statsDiv.innerHTML = `
                 <span style="color:var(--accent-blue)">⬆ ${window.formatBytes(stats.upload_speed_bps)}/s</span>
                 <span style="color:var(--accent-green)">⬇ ${window.formatBytes(stats.download_speed_bps)}/s</span>
-            </div>
         `;
+        
+        div.appendChild(nameDiv);
+        div.appendChild(statsDiv);
         interfacesContainer.appendChild(div);
     }
 }
@@ -182,6 +204,7 @@ function updateInterfaces(interfaces) {
 async function checkStatus() {
     try {
         const res = await fetch('/api/status');
+        if (!res.ok) return;
         const data = await res.json();
         
         currentMode = data.mode;
@@ -189,7 +212,7 @@ async function checkStatus() {
         
         // Update Badge
         modeBadge.textContent = currentMode;
-        if (currentMode.includes("Root")) {
+        if (currentMode.startsWith("Advanced")) {
             modeBadge.className = "badge advanced";
             // Unlock advanced features
             document.querySelectorAll('.advanced-feature').forEach(el => el.classList.remove('locked'));
@@ -224,6 +247,7 @@ btnPause.addEventListener('click', async () => {
     const endpoint = isPaused ? '/api/resume' : '/api/pause';
     try {
         const res = await fetch(endpoint, { method: 'POST' });
+        if (!res.ok) return;
         const data = await res.json();
         if (data.status) {
             isPaused = !isPaused;
@@ -241,6 +265,7 @@ btnExport.addEventListener('click', async () => {
     
     try {
         const res = await fetch('/api/export', { method: 'POST' });
+        if (!res.ok) return;
         const data = await res.json();
         
         if (data.status === 'success') {

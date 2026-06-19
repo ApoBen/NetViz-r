@@ -1,5 +1,7 @@
 // Helper to format bytes to human readable
 function formatBytes(bytes, decimals = 2) {
+    if (bytes === null || bytes === undefined || isNaN(bytes)) return '0 B';
+    if (bytes < 0) bytes = 0;
     if (!+bytes) return '0 B';
     const k = 1024;
     const dm = decimals < 0 ? 0 : decimals;
@@ -39,27 +41,39 @@ function updateProcessTable(processes) {
     const tbody = document.querySelector('#process-table tbody');
     tbody.innerHTML = '';
     
+    // Update table header to match new data format
+    const thead = document.querySelector('#process-table thead tr');
+    if (thead) {
+        thead.innerHTML = `
+            <th>App</th>
+            <th>PID</th>
+            <th>User</th>
+            <th>Connections</th>
+            <th>Remote</th>
+        `;
+    }
+    
     processes.forEach(proc => {
         const tr = document.createElement('tr');
         
-        // Speed column formatting
-        const up = formatBytes(proc.upload_speed_bps) + '/s';
-        const down = formatBytes(proc.download_speed_bps) + '/s';
-        
-        // Total data formatting
-        const totalSent = formatBytes(proc.total_sent);
-        const totalRecv = formatBytes(proc.total_recv);
-        
         const icon = getProcessIcon(proc.name);
+        
+        // Top remote address from first connection
+        let remoteAddr = '—';
+        if (proc.connections && proc.connections.length > 0) {
+            const conn = proc.connections[0];
+            remoteAddr = `${conn.raddr}:${conn.rport}`;
+        }
         
         tr.innerHTML = `
             <td><div style="display: flex; align-items: center; gap: 10px; font-size: 16px;">
                 ${icon}
                 <strong style="font-size: 13px;">${proc.name}</strong>
             </div></td>
-            <td>${proc.pid} <span style="font-size:11px; color:var(--text-secondary)">(${proc.user})</span></td>
-            <td><span style="color:var(--accent-blue)">⬆ ${up}</span> &nbsp; <span style="color:var(--accent-green)">⬇ ${down}</span></td>
-            <td><span style="color:var(--text-secondary)">⬆ ${totalSent}</span> &nbsp; <span style="color:var(--text-secondary)">⬇ ${totalRecv}</span></td>
+            <td>${proc.pid}</td>
+            <td>${proc.user}</td>
+            <td><span style="color:var(--accent-blue)">${proc.connection_count || 0}</span></td>
+            <td><span style="font-size:12px; color:var(--text-secondary)">${remoteAddr}</span></td>
         `;
         tbody.appendChild(tr);
     });

@@ -103,7 +103,7 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
             # client messages can be handled here (e.g. pause/resume commands over ws)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
 
 @app.on_event("startup")
 async def startup_event():

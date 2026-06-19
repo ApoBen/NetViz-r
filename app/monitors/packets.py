@@ -67,7 +67,7 @@ async def monitor_packets(logger: Logger):
     main_loop = asyncio.get_running_loop()
     global_logger_ref = logger
     
-    sniffer = AsyncSniffer(prn=packet_callback, store=False)
+    sniffer = AsyncSniffer(filter='not host 127.0.0.1', prn=packet_callback, store=False)
     sniffer.start()
     
     try:

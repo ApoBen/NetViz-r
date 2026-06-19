@@ -26,6 +26,9 @@ class SecurityMonitor:
         self.whitelisted_apps = set() # Application names
         self.SPIKE_THRESHOLD_MULTIPLIER = 5.0 # 500%
         self.SPIKE_MIN_BPS = 1024 * 1024 # 1 MB/s minimum to care
+        
+        # Cooldown tracking for suspicious port alerts: (ip, port) -> last_alert_time
+        self._suspicious_port_last_alert = {}
 
     async def _send_alert(self, logger: Logger, level: str, title: str, message: str, app_name: str = None):
         payload = {
@@ -38,7 +41,10 @@ class SecurityMonitor:
                 "timestamp": time.time()
             }
         }
-        logger.log_data("security_alert", payload["data"])
+        try:
+            logger.log_data("security_alert", payload["data"])
+        except Exception:
+            pass
         await manager.broadcast(payload)
 
     def analyze_packet(self, packet, logger: Logger, loop):
@@ -73,15 +79,24 @@ class SecurityMonitor:
 
     async def check_suspicious_ports(self, connections, logger: Logger):
         """Called periodically with active connections (Basic Mode)"""
+        current_time = time.time()
         for conn in connections:
             rport = None
+            raddr_ip = None
             if isinstance(conn['raddr'], str) and ':' in conn['raddr']:
                 try:
-                    rport = int(conn['raddr'].split(':')[-1])
-                except:
+                    parts = conn['raddr'].rsplit(':', 1)
+                    raddr_ip = parts[0]
+                    rport = int(parts[1])
+                except Exception:
                     pass
             
             if rport in self.suspicious_ports:
+                key = (raddr_ip, rport)
+                last_alert = self._suspicious_port_last_alert.get(key, 0)
+                if current_time - last_alert < 60:
+                    continue
+                self._suspicious_port_last_alert[key] = current_time
                 app = conn.get('process_name', 'Bilinmeyen')
                 msg = f"{app} uygulaması şüpheli bir porta ({rport} - {self.suspicious_ports[rport]}) bağlandı!"
                 await self._send_alert(logger, "high", "Şüpheli Bağlantı", msg)

@@ -21,6 +21,11 @@ async def monitor_bandwidth(logger: Logger):
         
         time_elapsed = current_time - last_time
         
+        if time_elapsed < 0.1:
+            last_time = current_time
+            last_io = current_io
+            continue
+        
         interfaces_data = {}
         total_upload_speed = 0
         total_download_speed = 0
@@ -41,7 +46,7 @@ async def monitor_bandwidth(logger: Logger):
                 }
                 
                 # Exclude loopback and virtual interfaces from the total sum
-                is_virtual = any(x in nic.lower() for x in ["lo", "docker", "veth", "br-", "virbr", "tun", "tap"])
+                is_virtual = nic.lower() == 'lo' or any(nic.lower().startswith(x) for x in ['docker', 'veth', 'br-', 'virbr', 'tun', 'tap', 'vboxnet', 'vmnet', 'loopback'])
                 if not is_virtual:
                     total_upload_speed += upload_speed
                     total_download_speed += download_speed

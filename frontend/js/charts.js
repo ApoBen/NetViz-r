@@ -115,8 +115,8 @@ function updateBandwidthChart(uploadBps, downloadBps) {
     const timeString = now.getHours() + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
     
     // Convert to MB/s
-    const uploadMbs = (uploadBps / (1024 * 1024)).toFixed(2);
-    const downloadMbs = (downloadBps / (1024 * 1024)).toFixed(2);
+    const uploadMbs = parseFloat((uploadBps / (1024 * 1024)).toFixed(2));
+    const downloadMbs = parseFloat((downloadBps / (1024 * 1024)).toFixed(2));
 
     timeLabels.push(timeString);
     uploadData.push(uploadMbs);
