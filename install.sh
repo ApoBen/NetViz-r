@@ -10,9 +10,23 @@ echo -e "${BLUE}======================================${NC}"
 echo -e "${BLUE}     🌐 NetVizör Kurulum Sihirbazı   ${NC}"
 echo -e "${BLUE}======================================${NC}"
 
+# Auto-install dependencies on Termux
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+    if ! command -v git &> /dev/null || ! command -v python3 &> /dev/null; then
+        echo -e "${GREEN}[+] Termux bağımlılıkları yükleniyor (git, python)...${NC}"
+        pkg install git python -y
+    fi
+fi
+
 # Check for Python
 if ! command -v python3 &> /dev/null; then
     echo -e "${RED}[!] python3 bulunamadı. Lütfen yükleyin.${NC}"
+    exit 1
+fi
+
+# Check for Git
+if ! command -v git &> /dev/null; then
+    echo -e "${RED}[!] git bulunamadı. Lütfen yükleyin.${NC}"
     exit 1
 fi
 
