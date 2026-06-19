@@ -4,11 +4,13 @@ Write-Host "======================================" -ForegroundColor Cyan
 
 if (-not (Get-Command "python" -ErrorAction SilentlyContinue)) {
     Write-Host "[!] Hata: Python bulunamadi. Lutfen indirip kurun." -ForegroundColor Red
-    exit
+    Read-Host "Cikmak icin Enter tusuna basin..."
+    return
 }
 if (-not (Get-Command "git" -ErrorAction SilentlyContinue)) {
     Write-Host "[!] Hata: Git bulunamadi. Lutfen indirip kurun." -ForegroundColor Red
-    exit
+    Read-Host "Cikmak icin Enter tusuna basin..."
+    return
 }
 
 $InstallDir = "$env:USERPROFILE\.netvizor"
