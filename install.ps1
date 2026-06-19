@@ -85,7 +85,7 @@ $BinDir = "$env:USERPROFILE\.netvizor\bin"
 if (-not (Test-Path $BinDir)) { New-Item -ItemType Directory -Force -Path $BinDir | Out-Null }
 
 $WrapperScript = "@echo off`ncd /d `"$InstallDir`"`ncall run.bat %*"
-Set-Content -Path "$BinDir\netvizor.bat" -Value $WrapperScript -Encoding UTF8
+Set-Content -Path "$BinDir\netvizor.bat" -Value $WrapperScript -Encoding Ascii
 
 # Safely add to User PATH
 $UserPath = [Environment]::GetEnvironmentVariable("Path", "User")
