@@ -36,9 +36,14 @@ python3 -m venv venv
 # Setup global command 'netvizor'
 echo -e "${GREEN}[+] Global çalıştırıcı (netvizor) ayarlanıyor...${NC}"
 
-if command -v termux-setup-storage &> /dev/null; then
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
     # Termux Environment
-    BIN_DIR="/data/data/com.termux/files/usr/bin"
+    if [ -n "$PREFIX" ]; then
+        BIN_DIR="$PREFIX/bin"
+    else
+        BIN_DIR="/data/data/com.termux/files/usr/bin"
+    fi
+    SUDO_CMD=""
 else
     # Standard Linux Environment
     BIN_DIR="/usr/local/bin"
@@ -61,4 +66,7 @@ $SUDO_CMD mv /tmp/netvizor_wrapper "$BIN_DIR/netvizor"
 $SUDO_CMD chmod +x "$BIN_DIR/netvizor"
 
 echo -e "${GREEN}[+] Kurulum başarıyla tamamlandı! 🎉${NC}"
+echo -e "Eğer ${RED}netvizor: command not found${NC} hatası alırsanız:"
+echo -e "  1. Terminali kapatıp tekrar açın veya ${BLUE}hash -r${NC} (zsh kullanıyorsanız ${BLUE}rehash${NC}) komutunu çalıştırın."
+echo -e "  2. PATH değişkeninizde ${BLUE}$BIN_DIR${NC} klasörünün ekli olduğundan emin olun."
 echo -e "Artık terminalinize sadece ${BLUE}netvizor${NC} yazarak uygulamayı başlatabilirsiniz."
