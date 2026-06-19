@@ -41,6 +41,11 @@ echo ""
 echo "NetVizör iki farklı modda çalışabilir:"
 echo "  1) Temel Mod    : Bant genişliği, süreçler ve TCP bağlantıları (Root gerekmez)"
 echo "  2) Gelişmiş Mod : Temel mod + Paket günlüğü ve DNS takibi (Sudo/Root gerektirir)"
+
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+    echo -e "${RED}[!] BİLGİ: Android 10+ cihazlarda sistem kısıtlamaları nedeniyle Root olmadan bant genişliği ve aktif bağlantılar 0 görünebilir.${NC}"
+fi
+
 echo ""
 read -p "Hangi modda başlatmak istersiniz? (1/2) [Varsayılan: 1]: " MODE_SELECTION
 
