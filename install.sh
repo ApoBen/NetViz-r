@@ -48,7 +48,13 @@ else
     python3 -m venv venv
 fi
 ./venv/bin/pip install --upgrade pip
-./venv/bin/pip install -r requirements.txt
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+    grep -v "psutil" requirements.txt > termux_requirements.txt
+    ./venv/bin/pip install -r termux_requirements.txt
+    rm termux_requirements.txt
+else
+    ./venv/bin/pip install -r requirements.txt
+fi
 
 # Setup global command 'netvizor'
 echo -e "${GREEN}[+] Global çalıştırıcı (netvizor) ayarlanıyor...${NC}"

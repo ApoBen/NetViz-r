@@ -28,7 +28,13 @@ fi
 
 # Bağımlılıkları yükle
 echo -e "${GREEN}[+] Bağımlılıklar kontrol ediliyor...${NC}"
-./venv/bin/pip install -r requirements.txt
+if [ -d "/data/data/com.termux" ] || [ -n "$TERMUX_VERSION" ]; then
+    grep -v "psutil" requirements.txt > termux_requirements.txt
+    ./venv/bin/pip install -r termux_requirements.txt
+    rm termux_requirements.txt
+else
+    ./venv/bin/pip install -r requirements.txt
+fi
 
 # Mod seçimi
 echo ""
