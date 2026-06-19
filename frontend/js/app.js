@@ -53,8 +53,8 @@ function handleMessage(msg) {
     switch (msg.type) {
         case 'bandwidth':
             // Update Headers
-            totalUploadEl.textContent = `${(msg.data.total_upload_speed_bps / (1024*1024)).toFixed(2)} MB/s`;
-            totalDownloadEl.textContent = `${(msg.data.total_download_speed_bps / (1024*1024)).toFixed(2)} MB/s`;
+            totalUploadEl.textContent = `${window.formatBytes(msg.data.total_upload_speed_bps)}/s`;
+            totalDownloadEl.textContent = `${window.formatBytes(msg.data.total_download_speed_bps)}/s`;
             
             // Update Chart
             updateBandwidthChart(msg.data.total_upload_speed_bps, msg.data.total_download_speed_bps);

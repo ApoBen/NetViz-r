@@ -40,8 +40,11 @@ async def monitor_bandwidth(logger: Logger):
                     "total_recv": io.bytes_recv
                 }
                 
-                total_upload_speed += upload_speed
-                total_download_speed += download_speed
+                # Exclude loopback and virtual interfaces from the total sum
+                is_virtual = any(x in nic.lower() for x in ["lo", "docker", "veth", "br-", "virbr", "tun", "tap"])
+                if not is_virtual:
+                    total_upload_speed += upload_speed
+                    total_download_speed += download_speed
                 
         payload = {
             "type": "bandwidth",
