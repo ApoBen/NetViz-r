@@ -36,7 +36,7 @@ if [ -d "$INSTALL_DIR" ]; then
     git pull origin main
 else
     echo -e "${GREEN}[+] NetVizör indiriliyor...${NC}"
-    git clone https://github.com/ApoBen/NetViz-r.git "$INSTALL_DIR"
+    git clone https://github.com/ApoBen/netvizor.git "$INSTALL_DIR"
     cd "$INSTALL_DIR"
 fi
 

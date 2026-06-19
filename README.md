@@ -18,7 +18,7 @@ NetVizör, bilgisayarınızda veya cihazınızda çalışan uygulamaların ağ k
 Terminalinize tek bir satır kopyalayarak uygulamayı global ve otomatik olarak kurabilirsiniz:
 
 ```bash
-curl -sSL "https://raw.githubusercontent.com/ApoBen/NetViz-r/main/install.sh?$(date +%s)" | bash
+curl -sSL "https://raw.githubusercontent.com/ApoBen/netvizor/main/install.sh?$(date +%s)" | bash
 ```
 
 Kurulum tamamlandıktan sonra terminalinize sadece şunu yazarak arayüzü başlatabilirsiniz:
@@ -47,10 +47,10 @@ Linux üzerinde tüm özellikleri tam kapasiteyle kullanmak için:
 Android platformu için tamamen yerel (Native) bir mobil uygulama geliştirme çalışmaları devam etmektedir. Şu an için mobil arayüz planlamadadır.
 
 ### 🪟 3. Windows
-Windows ortamında tek komutla kurmak için PowerShell (Yönetici olarak açmanız önerilir) penceresine şu komutu kopyalayın:
+Windows ortamında tek komutla kurmak için PowerShell penceresine şu komutu kopyalayın:
 
 ```powershell
-iwr -useb https://raw.githubusercontent.com/ApoBen/NetViz-r/main/install.ps1 | iex
+iwr -useb https://raw.githubusercontent.com/ApoBen/netvizor/main/install.ps1 | iex
 ```
 
 Kurulum bittikten sonra herhangi bir komut satırından arayüzü başlatabilirsiniz:

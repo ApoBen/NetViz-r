@@ -42,7 +42,7 @@ if ($HasGit) {
         git pull origin main
     } else {
         Write-Host "[+] NetVizör indiriliyor (Git)..." -ForegroundColor Green
-        git clone https://github.com/ApoBen/NetViz-r.git $InstallDir
+        git clone https://github.com/ApoBen/netvizor.git $InstallDir
         Set-Location $InstallDir
     }
 } else {
@@ -56,7 +56,7 @@ if ($HasGit) {
     }
     
     Write-Host "[+] ZIP dosyasi indiriliyor..." -ForegroundColor Green
-    Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/ApoBen/NetViz-r/archive/refs/heads/main.zip" -OutFile $ZipPath
+    Invoke-WebRequest -UseBasicParsing -Uri "https://github.com/ApoBen/netvizor/archive/refs/heads/main.zip" -OutFile $ZipPath
     
     Write-Host "[+] ZIP dosyasi ayiklaniyor..." -ForegroundColor Green
     Expand-Archive -Path $ZipPath -DestinationPath $ExtractPath -Force
@@ -66,7 +66,7 @@ if ($HasGit) {
     }
     
     Write-Host "[+] Dosyalar kopyalaniyor..." -ForegroundColor Green
-    Copy-Item -Path "$ExtractPath\NetViz-r-main\*" -Destination $InstallDir -Recurse -Force
+    Copy-Item -Path "$ExtractPath\netvizor-main\*" -Destination $InstallDir -Recurse -Force
     
     # Temizlik
     Remove-Item -Path $ZipPath -Force
