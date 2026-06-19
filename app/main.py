@@ -32,8 +32,16 @@ from app.monitors.processes import monitor_processes
 app = FastAPI(title="NetVizör Backend")
 global_logger = Logger()
 
-# Check if running as root
-IS_ROOT = os.geteuid() == 0
+# Check if running as root / admin
+try:
+    IS_ROOT = os.geteuid() == 0
+except AttributeError:
+    # Windows fallback
+    import ctypes
+    try:
+        IS_ROOT = ctypes.windll.shell32.IsUserAnAdmin() != 0
+    except Exception:
+        IS_ROOT = False
 
 # CORS
 app.add_middleware(
