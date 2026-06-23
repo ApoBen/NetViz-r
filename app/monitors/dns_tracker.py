@@ -28,21 +28,21 @@ def dns_callback(packet):
             
             src_ip = packet[IP].src if IP in packet else "Unknown"
             
-                query_data = {
-                    "time": float(packet.time),
-                    "domain": query,
-                    "type": "Query",
-                    "src": src_ip
-                }
-                dns_log.appendleft(query_data)
-                domain_counter[query] += 1
-                
-                if global_logger_ref and global_logger_ref.sql_enabled:
-                    from app.database import db_manager
-                    try:
-                        db_manager.insert_dns(query_data)
-                    except Exception:
-                        pass
+            query_data = {
+                "time": float(packet.time),
+                "domain": query,
+                "type": "Query",
+                "src": src_ip
+            }
+            dns_log.appendleft(query_data)
+            domain_counter[query] += 1
+            
+            if global_logger_ref and global_logger_ref.sql_enabled:
+                from app.database import db_manager
+                try:
+                    db_manager.insert_dns(query_data)
+                except Exception:
+                    pass
     except Exception:
         pass
 
