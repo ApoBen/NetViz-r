@@ -106,9 +106,14 @@ class DatabaseManager:
         conn = self._get_conn()
         c = conn.cursor()
         timestamp = datetime.now().isoformat()
-        for conn_item in data:
-            c.execute("INSERT INTO connections (timestamp, laddr, raddr, status, pid) VALUES (?, ?, ?, ?, ?)",
-                      (timestamp, conn_item.get("laddr"), conn_item.get("raddr"), conn_item.get("status"), conn_item.get("pid")))
+        
+        # Extract the list from the dictionary payload
+        conn_list = data.get("connections", []) if isinstance(data, dict) else data
+        
+        for conn_item in conn_list:
+            if isinstance(conn_item, dict):
+                c.execute("INSERT INTO connections (timestamp, laddr, raddr, status, pid) VALUES (?, ?, ?, ?, ?)",
+                          (timestamp, conn_item.get("laddr"), conn_item.get("raddr"), conn_item.get("status"), conn_item.get("pid")))
         conn.commit()
         conn.close()
 
@@ -116,13 +121,18 @@ class DatabaseManager:
         conn = self._get_conn()
         c = conn.cursor()
         timestamp = datetime.now().isoformat()
-        for proc in data:
-            c.execute('''INSERT INTO processes 
-                        (timestamp, pid, name, username, upload_speed, download_speed, total_upload, total_download) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
-                      (timestamp, proc.get("pid"), proc.get("name"), proc.get("username"),
-                       proc.get("upload_speed", 0), proc.get("download_speed", 0),
-                       proc.get("total_upload", 0), proc.get("total_download", 0)))
+        
+        # Extract the list from the dictionary payload
+        proc_list = data.get("processes", []) if isinstance(data, dict) else data
+        
+        for proc in proc_list:
+            if isinstance(proc, dict):
+                c.execute('''INSERT INTO processes 
+                            (timestamp, pid, name, username, upload_speed, download_speed, total_upload, total_download) 
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?)''',
+                          (timestamp, proc.get("pid"), proc.get("name"), proc.get("username"),
+                           proc.get("upload_speed", 0), proc.get("download_speed", 0),
+                           proc.get("total_upload", 0), proc.get("total_download", 0)))
         conn.commit()
         conn.close()
 
