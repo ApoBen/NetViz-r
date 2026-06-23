@@ -1,3 +1,4 @@
+#!/usr/bin/env xdg-open
 [Desktop Entry]
 Name=NetVizör
 Comment=Gerçek Zamanlı Ağ Trafiği İzleme & IDS

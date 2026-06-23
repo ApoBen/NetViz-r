@@ -49,7 +49,9 @@
                 </button>
                 <div id="export-msg" class="msg-text"></div>
                 
-                <!-- Settings section removed for auto language detection -->
+                <button id="btn-settings" class="btn secondary" style="margin-top: 10px;">
+                    <span class="icon">⚙️</span> <span data-i18n="btn_settings">Ayarlar</span>
+                </button>
             </div>
             
             <div class="interfaces-list" id="interfaces-container">
@@ -165,6 +167,28 @@
 
     <!-- Toast Notifications Container -->
     <div id="toast-container" class="toast-container"></div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 data-i18n="settings_title">⚙️ Ayarlar</h3>
+                <span class="close-modal" id="close-settings">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <strong data-i18n="setting_sql_title">Veritabanı (SQLite) Kaydı</strong>
+                        <p data-i18n="setting_sql_desc" class="setting-desc">Ağ verilerini ve geçmişi kalıcı olarak netvizor.db dosyasına kaydeder. Uzun süreli kullanımlarda dosya boyutu büyüyebilir.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="toggle-sql">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Scripts -->
     <script src="/js/i18n.js"></script>

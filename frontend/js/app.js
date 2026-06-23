@@ -201,6 +201,93 @@ function updateInterfaces(interfaces) {
     }
 }
 
+// Update process table
+function updateProcessTable(processes) {
+    const tbody = document.getElementById('process-table').querySelector('tbody');
+    tbody.innerHTML = '';
+    
+    // Sort processes by download speed
+    processes.sort((a, b) => b.download_speed - a.download_speed);
+    
+    processes.forEach(proc => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div class="process-app">
+                    <img src="https://ui-avatars.com/api/?name=${proc.name}&background=random&color=fff&size=24" class="app-icon" onerror="this.style.display='none'">
+                    <span>${proc.name}</span>
+                </div>
+            </td>
+            <td><span class="pid">${proc.pid}</span> <span class="username">${proc.username}</span></td>
+            <td>
+                <div class="speed-indicator"><span class="up-arrow">↑</span> ${formatBytes(proc.upload_speed)}/s</div>
+                <div class="speed-indicator"><span class="down-arrow">↓</span> ${formatBytes(proc.download_speed)}/s</div>
+            </td>
+            <td>
+                <div><span class="up-arrow">↑</span> ${formatBytes(proc.total_upload)}</div>
+                <div><span class="down-arrow">↓</span> ${formatBytes(proc.total_download)}</div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// Settings Modal Logic
+document.addEventListener('DOMContentLoaded', () => {
+    const btnSettings = document.getElementById('btn-settings');
+    const settingsModal = document.getElementById('settings-modal');
+    const closeSettings = document.getElementById('close-settings');
+    const toggleSql = document.getElementById('toggle-sql');
+    
+    if(btnSettings && settingsModal) {
+        btnSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'block';
+            // Fetch current settings
+            fetch('/api/settings')
+                .then(res => res.json())
+                .then(data => {
+                    toggleSql.checked = data.sql_enabled;
+                })
+                .catch(err => console.error("Error fetching settings:", err));
+        });
+        
+        closeSettings.addEventListener('click', () => {
+            settingsModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (e) => {
+            if (e.target == settingsModal) {
+                settingsModal.style.display = 'none';
+            }
+        });
+        
+        // Handle Toggle Switch
+        toggleSql.addEventListener('change', (e) => {
+            const isEnabled = e.target.checked;
+            fetch('/api/settings/sql', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ enabled: isEnabled })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    showToast(
+                        t('toast_success'), 
+                        isEnabled ? 'SQL Logging Enabled' : 'SQL Logging Disabled', 
+                        'low'
+                    );
+                }
+            })
+            .catch(err => {
+                console.error("Error updating SQL setting:", err);
+                toggleSql.checked = !isEnabled; // revert on error
+                showToast(t('toast_error'), 'Failed to update setting', 'high');
+            });
+        });
+    }
+});
+
 async function checkStatus() {
     try {
         const res = await fetch('/api/status');

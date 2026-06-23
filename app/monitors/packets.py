@@ -53,6 +53,13 @@ def packet_callback(packet):
         
         packet_buffer.appendleft(pkt_info)
         
+        if global_logger_ref and global_logger_ref.sql_enabled:
+            from app.database import db_manager
+            try:
+                db_manager.insert_packet(pkt_info)
+            except Exception:
+                pass
+        
         # Security Analysis (Port Scan detection etc.)
         if main_loop and global_logger_ref:
             security_manager.analyze_packet(packet, global_logger_ref, main_loop)
