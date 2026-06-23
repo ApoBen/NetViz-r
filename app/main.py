@@ -84,6 +84,8 @@ async def clear_data():
     global_logger.clear_data()
     return {"status": "cleared"}
 
+from pydantic import BaseModel
+
 @app.get("/api/settings")
 async def get_settings():
     return {
@@ -98,7 +100,6 @@ async def set_sql_setting(req: SqlSettingRequest):
     global_logger.toggle_sql(req.enabled)
     return {"status": "success", "sql_enabled": global_logger.sql_enabled}
 
-from pydantic import BaseModel
 class WhitelistRequest(BaseModel):
     app_name: str
 
